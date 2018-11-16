@@ -12,8 +12,27 @@ def searchNearestLeftIndex(arr, value):
   return i
 
 
-def sortNode(arr):
-  for i in range(len(arr)):
+def shellSort(array):
+  increment = len(array) - 2
+  while increment > 0:
+
+    for startPosition in range(increment):
+      gapInsertionSort(array, startPosition, increment)
+
+    increment -= 2
+
+
+def gapInsertionSort(array, low, gap):
+
+  for i in range(low + gap, len(array), gap):
+    currentvalue = array[i]
+    position = i
+
+    while position >= gap and array[position - gap] > currentvalue:
+      array[position] = array[position - gap]
+      position = position - gap
+
+    array[position] = currentvalue
 
 
 def sortInsert(arr):
@@ -44,6 +63,6 @@ def sortBubble(arr):
 
 res = [1, 3, 2, 5, 4, 4, 4, 9, 9, 10, 5, 99, 0]
 
-sortInsert(res)
+shellSort(res)
 
 print(res)

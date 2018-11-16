@@ -34,18 +34,42 @@ def calcSin(x, eps=0.0001):
   return s
 
 
-eps = 1 / (10 ** 40)
-print("eps: " + str(eps))
-power = math.pi
-tries = 4
+def felem(i):
+  if i == 0:
+    return 1
+  return 1 / fact(i)
 
-times = []
-result = 0
-for x in range(tries):
-  s1 = time.time()
-  result = calcSin(power, eps)
-  s2 = time.time()
-  d1 = s2 - s1
-  times.append(d1)
-  print("time#{0}: {1}".format(x, d1))
-print("res: " + str(result))
+
+def sumR(f, n):
+  return sum([f(i) for i in range(n)])
+
+
+def sumRP(f, n, pred):
+  val = f(n)
+  sum = 0
+  while pred(val):
+    sum += val
+    val = f(n)
+  return sum
+
+
+def pred(x):
+  return abs(x) < 0.1 ** 3
+
+
+def fpi(i):
+  return 4 * 1 / (i + 1) * (-1 if i % 2 == 1 else 1)
+
+
+def fsin(x):
+  return lambda k: ((-1) ** k) * (x ** (2 * k + 1)) / (fact(2 * k + 1))
+
+
+x = math.pi / 2
+r1 = sumR(fsin(x), 3)
+r2 = sumR(fsin(x), 10)
+r3 = sumR(fsin(x), 30)
+
+print(r1)
+print(r2)
+print(r3)
