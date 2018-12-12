@@ -1,7 +1,7 @@
 from sorts.sortInfo import SortInfo
 
 
-def shellSort(arr):
+def shellSort(arr, progress=lambda x: x):
   swaps = 0
   compares = 0
 
@@ -10,6 +10,8 @@ def shellSort(arr):
 
   compares += 1
   while gap > 0:
+    progress(1 - (gap / (n // 2)))
+
     for i in range(gap, n):
       temp = arr[i]
       j = i

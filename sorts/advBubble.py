@@ -1,7 +1,7 @@
 from sorts.sortInfo import SortInfo
 
 
-def advBubbleSort(a):
+def advBubbleSort(a, progress=lambda x: x):
   swaps = 0
   compares = 0
 
@@ -16,6 +16,8 @@ def advBubbleSort(a):
         q = True
 
       compares += 1
+
+    compares += 1
     if not q:
       break
 

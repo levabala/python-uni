@@ -1,7 +1,7 @@
 from sorts.sortInfo import SortInfo
 
 
-def bubbleSort(arr):
+def bubbleSort(arr, progress=lambda x: x):
   swaps = 0
   compares = 0
 
@@ -11,6 +11,7 @@ def bubbleSort(arr):
       if arr[j] > arr[j+1]:
         arr[j], arr[j+1] = arr[j+1], arr[j]
         swaps += 1
+
       compares += 1
 
   return SortInfo(swaps=swaps, compares=compares)
