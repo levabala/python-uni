@@ -21,4 +21,6 @@ def advBubbleSort(a, progress=lambda x: x):
     if not q:
       break
 
+    # progress(i / (len(a) - 1))
+
   return SortInfo(swaps=swaps, compares=compares)

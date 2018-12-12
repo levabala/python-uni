@@ -14,4 +14,6 @@ def bubbleSort(arr, progress=lambda x: x):
 
       compares += 1
 
+    progress(i / n)
+
   return SortInfo(swaps=swaps, compares=compares)

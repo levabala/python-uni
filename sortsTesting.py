@@ -3,7 +3,7 @@ import sys
 from random import randint
 from statistics import mean
 from sorts.sortInfo import SortInfo
-from other.bcolors import bcolors, bold, green
+from other.bcolors import bcolors, bold, green, blue
 import time
 
 
@@ -23,12 +23,16 @@ def getTime(): return int(round(time.time() * 1000))
 
 def main():
 
-  # SORTS = [bubbleSort, advBubbleSort, insertionSort, insertionBinary, shellSort, quickSort]
+  SORTS = [bubbleSort, advBubbleSort, insertionSort, insertionBinary, shellSort, quickSort]
   # SORTS = [insertionSort, insertionBinary, shellSort, quickSort]
-  SORTS = [insertionBinary, shellSort, quickSort]
+  # SORTS = [insertionBinary, shellSort, quickSort]
+  # SORTS = [quickSort]
 
-  # TEST_LENGTHS = [10 ** 2, 10 ** 3, int(10 ** 4.3)]  # , 10 ** 4]  # , 10 ** 5]
-  TEST_LENGTHS = [10 ** 2, 10 ** 3, int(10 ** 5)]
+  TEST_LENGTHS = [10 ** 2, 10 ** 3, int(10 ** 4)]
+  # TEST_LENGTHS = [10 ** 2, 10 ** 3, int(10 ** 4.3)]
+  # TEST_LENGTHS = [10 ** 2, 10 ** 3, int(10 ** 5)]
+  # TEST_LENGTHS = [10 ** 5, 10 ** 6, int(10 ** 7)]
+
   APPROXIMATE_ITERATIONS = 1
   TOTAL_LENGTH = sum(TEST_LENGTHS) * APPROXIMATE_ITERATIONS * len(SORTS)
   TRIGGER_LENGTH = int(TOTAL_LENGTH / 100)
@@ -75,33 +79,34 @@ def main():
           nonlocal sortFunc
           nonlocal timeStart
           nonlocal progressInsideHappened
+          nonlocal length
 
           secs = (getTime() - timeStart) / 10 ** 3
 
           lastTriggeredLength = showProgress(
-              lengthProcessedBefore + length * percent, lastTriggeredLength, TOTAL_LENGTH, TRIGGER_LENGTH, sortFunc.__name__, secs, timeStart, progressInsideHappened, not progressInsideHappened)
+              lengthProcessedBefore + length * percent, lastTriggeredLength, lengthProcessed + length, TOTAL_LENGTH, TRIGGER_LENGTH, sortFunc.__name__, secs, timeStart, progressInsideHappened, not progressInsideHappened)
 
           progressInsideHappened = True
 
         # do sorting
         info = sortFunc(arrCopy, progressCallback)
 
-        # check if sorted correctly
-        correctly = validateSorting(arrCopy)
-        if not correctly:
-          print('{}Wrong sorted for {} algorithm for {} elements{}'.format(
-              bcolors.FAIL, sortFunc.__name__, len(testArray), bcolors.ENDC))
-
-        # register data of current sorting
-        data[i3].append(info)
-
         # show progress
         lengthProcessed += length
         secs = (getTime() - timeStart) / 10 ** 3
 
         lastTriggeredLength = showProgress(
-            lengthProcessed, lastTriggeredLength, TOTAL_LENGTH, TRIGGER_LENGTH, sortFunc.__name__, secs, timeStart, False, not progressInsideHappened)
-        # print()
+            lengthProcessed, lastTriggeredLength, lengthProcessed, TOTAL_LENGTH, TRIGGER_LENGTH, sortFunc.__name__, secs, timeStart, False, not progressInsideHappened)
+
+        # check if sorted correctly
+        correctly = validateSorting(arrCopy)
+        if not correctly:
+          print('{}Wrong sorted for {} algorithm for {} elements{}'.format(
+              bcolors.FAIL, sortFunc.__name__, len(testArray), bcolors.ENDC))
+          input()
+
+        # register data of current sorting
+        data[i3].append(info)
 
     for i2 in range(len(data)):
       sortData = data[i2]
@@ -136,23 +141,30 @@ def main():
 
 # function for validating if array is correctly sorted
 def validateSorting(arr):
+  print(blue('validating...'))
   for i in range(1, len(arr)):
     if arr[i] < arr[i - 1]:
+      sys.stdout.write("\033[F")  # Cursor up one line
+      sys.stdout.write("\033[K")  # Clear to the end of line
       return False
+
+  sys.stdout.write("\033[F")  # Cursor up one line
+  sys.stdout.write("\033[K")  # Clear to the end of line
   return True
 
 # function for showing analyzing progress
 
 
-def showProgress(processed, last, total, trigger, processor='unknown', timeSecs=0, timeStart=0, rewrite=True, forced=False):
+def showProgress(processed, last, localTarget, total, trigger, processor='unknown', timeSecs=0, timeStart=0, rewrite=True, forced=False):
   diff = processed - last
   if diff > trigger or forced:
     if rewrite:
       sys.stdout.write("\033[F")  # Cursor up one line
       sys.stdout.write("\033[K")  # Clear to the end of line
 
-    print('Progress: {}% by {} ({}s, {}el/s)'.format(
+    print('Progress: {}/{}% by {} ({}s, {}el/s)'.format(
         bold(int(processed / total * 100)),
+        bold(int(localTarget / total * 100)),
         green(processor),
         bold('{:.3f}'.format(timeSecs)),
         bold('{:.1f}'.format(min(diff / ((max(getTime() - timeStart, 1)) / 10 ** 3), diff)))
