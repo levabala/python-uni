@@ -22,14 +22,13 @@ def getTime(): return int(round(time.time() * 1000))
 
 
 def main():
-
   SORTS = [bubbleSort, advBubbleSort, insertionSort, insertionBinary, shellSort, quickSort]
   # SORTS = [insertionSort, insertionBinary, shellSort, quickSort]
   # SORTS = [insertionBinary, shellSort, quickSort]
-  # SORTS = [quickSort]
+  # SORTS = [shellSort, quickSort]
 
-  TEST_LENGTHS = [10 ** 2, 10 ** 3, int(10 ** 4)]
-  # TEST_LENGTHS = [10 ** 2, 10 ** 3, int(10 ** 4.3)]
+  # TEST_LENGTHS = [int(10 ** 5), 10 ** 6, 10 ** 7]
+  TEST_LENGTHS = [10 ** 2, 10 ** 3, int(10 ** 3.1)]
   # TEST_LENGTHS = [10 ** 2, 10 ** 3, int(10 ** 5)]
   # TEST_LENGTHS = [10 ** 5, 10 ** 6, int(10 ** 7)]
 
@@ -84,7 +83,7 @@ def main():
           secs = (getTime() - timeStart) / 10 ** 3
 
           lastTriggeredLength = showProgress(
-              lengthProcessedBefore + length * percent, lastTriggeredLength, lengthProcessed + length, TOTAL_LENGTH, TRIGGER_LENGTH, sortFunc.__name__, secs, timeStart, progressInsideHappened, not progressInsideHappened)
+              lengthProcessedBefore + length * percent, lengthProcessedBefore, lastTriggeredLength, lengthProcessed + length, TOTAL_LENGTH, TRIGGER_LENGTH, sortFunc.__name__, secs, timeStart, progressInsideHappened, not progressInsideHappened)
 
           progressInsideHappened = True
 
@@ -96,7 +95,7 @@ def main():
         secs = (getTime() - timeStart) / 10 ** 3
 
         lastTriggeredLength = showProgress(
-            lengthProcessed, lastTriggeredLength, lengthProcessed, TOTAL_LENGTH, TRIGGER_LENGTH, sortFunc.__name__, secs, timeStart, False, not progressInsideHappened)
+            lengthProcessed, lengthProcessedBefore, lastTriggeredLength, lengthProcessed, TOTAL_LENGTH, TRIGGER_LENGTH, sortFunc.__name__, secs, timeStart, True, not progressInsideHappened)
 
         # check if sorted correctly
         correctly = validateSorting(arrCopy)
@@ -123,18 +122,32 @@ def main():
   print('\n\nR E S U L T S: \n')
   for i in range(len(analyzeData)):
     data = analyzeData[i]
-    print('Length {}{}{}'.format(bcolors.BOLD, TEST_LENGTHS[i], bcolors.ENDC))
+
+    if sys.argv.__contains__('--export'):
+      print('{}{:<15}{} {}{:<10}{}'.format(bcolors.OKGREEN, 'length',
+                                           bcolors.ENDC, bcolors.BOLD, TEST_LENGTHS[i], bcolors.ENDC))
+    else:
+      print('Length {}{}{}'.format(bcolors.BOLD, TEST_LENGTHS[i], bcolors.ENDC))
 
     for i2 in range(len(SORTS)):
-      print(
-          'Sort {}{:<15}{} swaps: {}{:<10}{} compares: {}{:<10}{} total: {}{:<10}{}'.format(
-              bcolors.OKGREEN, SORTS[i2].__name__, bcolors.ENDC,
-              bcolors.BOLD, int(data[i2].swaps), bcolors.ENDC,  bcolors.BOLD,
-              int(data[i2].compares), bcolors.ENDC,
-              bcolors.BOLD, str(int((data[i2].compares + data[i2].swaps) /
-                                    TEST_LENGTHS[i] * 100)) + '%', bcolors.ENDC
-          ),
-      )
+      if sys.argv.__contains__('--export'):
+        print(
+            '{}{:<15}{} {}{:<10}{} {}{:<10}{}'.format(
+                bcolors.OKGREEN, SORTS[i2].__name__, bcolors.ENDC,
+                bcolors.BOLD, int(data[i2].swaps), bcolors.ENDC,  bcolors.BOLD,
+                int(data[i2].compares), bcolors.ENDC,
+            ),
+        )
+      else:
+        print(
+            'Sort {}{:<15}{} swaps: {}{:<10}{} compares: {}{:<10}{} total: {}{:<10}{}'.format(
+                bcolors.OKGREEN, SORTS[i2].__name__, bcolors.ENDC,
+                bcolors.BOLD, int(data[i2].swaps), bcolors.ENDC,  bcolors.BOLD,
+                int(data[i2].compares), bcolors.ENDC,
+                bcolors.BOLD, str(int((data[i2].compares + data[i2].swaps) /
+                                      TEST_LENGTHS[i] * 100)) + '%', bcolors.ENDC
+            ),
+        )
 
     print()
 
@@ -155,7 +168,7 @@ def validateSorting(arr):
 # function for showing analyzing progress
 
 
-def showProgress(processed, last, localTarget, total, trigger, processor='unknown', timeSecs=0, timeStart=0, rewrite=True, forced=False):
+def showProgress(processed, start, last, localTarget, total, trigger, processor='unknown', timeSecs=0, timeStart=0, rewrite=True, forced=False):
   diff = processed - last
   if diff > trigger or forced:
     if rewrite:
@@ -167,7 +180,8 @@ def showProgress(processed, last, localTarget, total, trigger, processor='unknow
         bold(int(localTarget / total * 100)),
         green(processor),
         bold('{:.3f}'.format(timeSecs)),
-        bold('{:.1f}'.format(min(diff / ((max(getTime() - timeStart, 1)) / 10 ** 3), diff)))
+        bold('{:.1f}'.format(min(processed - start, localTarget -
+                                 processed) / timeSecs) if timeSecs != 0 else 0)
     )
     )
 
