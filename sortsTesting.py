@@ -1,10 +1,10 @@
 # libs
 import sys
+import time
 from random import randint
 from statistics import mean
 from sorts.sortInfo import SortInfo
 from other.bcolors import bcolors, bold, green, blue
-import time
 
 
 # sorts
@@ -20,6 +20,9 @@ print('\n------------- SORT ALGORITHMS TESTING -------------\n')
 
 def getTime(): return int(round(time.time() * 1000))
 
+a = 10
+b = a + 1
+print(a, b)
 
 def main():
   SORTS = [bubbleSort, advBubbleSort, insertionSort, insertionBinary, shellSort, quickSort]
@@ -28,11 +31,11 @@ def main():
   # SORTS = [shellSort, quickSort]
 
   # TEST_LENGTHS = [int(10 ** 5), 10 ** 6, 10 ** 7]
-  TEST_LENGTHS = [10 ** 2, 10 ** 3, int(10 ** 3.1)]
+  TEST_LENGTHS = [10 ** 2, 10 ** 3, int(10 ** 4)]
   # TEST_LENGTHS = [10 ** 2, 10 ** 3, int(10 ** 5)]
   # TEST_LENGTHS = [10 ** 5, 10 ** 6, int(10 ** 7)]
 
-  APPROXIMATE_ITERATIONS = 1
+  APPROXIMATE_ITERATIONS = 3
   TOTAL_LENGTH = sum(TEST_LENGTHS) * APPROXIMATE_ITERATIONS * len(SORTS)
   TRIGGER_LENGTH = int(TOTAL_LENGTH / 100)
   # RANDOM_RANGE = (-10 ** 5, 10 ** 5)

@@ -11,7 +11,7 @@ def advBubbleSort(a, progress=lambda x: x):
     for i in range(len(a)-1-i):
       if a[i] > a[i+1]:
         a[i], a[i+1] = a[i+1], a[i]
-        swaps += 1
+        swaps += 2
 
         q = True
 

@@ -10,7 +10,7 @@ def bubbleSort(arr, progress=lambda x: x):
     for j in range(0, n-i-1):
       if arr[j] > arr[j+1]:
         arr[j], arr[j+1] = arr[j+1], arr[j]
-        swaps += 1
+        swaps += 2
 
       compares += 1
 
