@@ -2,17 +2,47 @@ import sys
 import os
 import time
 import math
+from random import random
 from functools import reduce
+
+terminalHeight, terminalWidth = os.popen('stty size', 'r').read().split()
+
+terminalWidth = int(terminalWidth)
+terminalHeight = int(terminalHeight)
 
 os.system('clear')
 sys.setrecursionlimit(1500)
 
 
-def moveUpCursor(count):
+def generateRandomMaze(width, height, density):
+  startX = 2
+  startY = math.floor(height / 2)
+
+  endX = width - 2
+  endY = startY
+
+  maze = []
+  for y in range(height):
+    row = []
+    maze.append(row)
+    for x in range(width):
+      row.append(1 if random() < density else 0)
+
+  maze[startY][startX] = 2
+  maze[endY][endX] = 3
+
+  return maze
+
+
+def moveUpCursor(count, force=False):
   while count:
-    # sys.stdout.write("\033[K")  # Clear to the end of line
     sys.stdout.write("\033[F")  # Cursor up one line
+    if force:
+      sys.stdout.write("\033[K")  # Clear to the end of line
     count -= 1
+
+
+2
 
 
 def parseMaze(s):
@@ -210,9 +240,7 @@ def getPath(maze, ids, doPrint=False):
 
   pathExists = resolveIterators(getWalkNextIterator(heights, sx, sy, tx, ty)())
   if not pathExists:
-    if doPrint:
-      print('no path exists!')
-    return
+    return []
 
   path = downhill(heights)
 
@@ -288,12 +316,22 @@ ids = {
     3: 'end'
 }
 
-parsedMaze = parseMaze(maze3)
+# parsedMaze = parseMaze(maze3)
+parsedMaze = generateRandomMaze(30, 20, 0.3)
 
-getPath(parsedMaze, ids, doPrint=True)
+if (len(parsedMaze[0]) * 3 < terminalWidth or len(parsedMaze) < terminalHeight):
+  getPath(parsedMaze, ids, doPrint=True)
+
+print('calculations with no printing...')
 
 startTime = time.time()
-getPath(parsedMaze, ids, doPrint=False)
+path = getPath(parsedMaze, ids, doPrint=False)
 endTime = time.time()
 
-print('time elapsed with no printing: {}ms'.format((endTime - startTime)))
+moveUpCursor(1, True)
+
+print('', end='\r')
+
+if not path:
+  print('no path exists!')
+print('time elapsed (real): {}ms'.format((endTime - startTime)))
