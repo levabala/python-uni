@@ -13,18 +13,22 @@ def teach(
     childPerBest=2,
     teachRound=100,
     gameIndex=0
-):
-  print("Round {0} ({1} veteran players)".format(gameIndex, len(receivers) + len(dealers)))
+):  
+  veteran = len(receivers) + len(dealers)
 
-  receivers = receivers + list(map(lambda v: hidden(), range(newSize))) + \
-      list(map(lambda r: flat(map(lambda q: mutate(r), [r] * childPerBest)), receivers))
-  dealers = dealers + list(map(lambda v: hidden(), range(newSize))) + \
-      list(map(lambda r: flat(map(lambda q: mutate(r), [r] * childPerBest)), dealers))
+  receiversMutators = list(flat(map(lambda r: map(lambda q: mutate(q), [r] * childPerBest), receivers)))
+  receivers = receivers + list(map(lambda v: hidden(), range(newSize))) + receiversMutators
+      
+  dealersMutators = list(flat(map(lambda d: map(lambda q: mutate(q), [d] * childPerBest), dealers)))
+  dealers = dealers + list(map(lambda v: hidden(), range(newSize))) + dealersMutators
+      
+  print("{0}, {1}".format(len(receiversMutators), len(dealersMutators)))
+  print("Round {0} ({1} veteran players, {2} total)".format(gameIndex, veteran, len(receivers) + len(dealers)))
 
   receiversPoints = [0] * len(receivers)
   dealersPoints = [0] * len(receivers)
 
-  total = roundsCount * len(receivers) * len(dealers)
+  # total = roundsCount * len(receivers) * len(dealers)
   done = 0
   for rr in range(roundsCount):
     for receiverIndex in range(len(receivers)):
