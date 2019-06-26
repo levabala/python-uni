@@ -24,6 +24,13 @@ def whenToTake(nonRefundableTicketCost, refundableTicketCost, refundCost):
   lines = plt.plot([threshold, threshold], [nonRefundLoss, 0])
   plt.setp(lines, color='green', linewidth=2.0)
 
+  plt.title('Money loss plot')
+
+  plt.xlabel('Percentage of certainty')
+  plt.ylabel('Money loss average')
+
+  plt.legend(lines, ["threshold"])
+
   plt.show()
 
 
